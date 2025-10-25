@@ -1,0 +1,419 @@
+.chat-widget-container {
+    --chat-blur: 50px;
+    --chat-blur-deep: 100px;
+    --chat-glass-bg: rgba(255, 255, 255, 0.05);
+    --chat-glass-bg-strong: rgba(255, 255, 255, 0.7);
+    --chat-border: rgba(255, 255, 255, 0.14);
+    --chat-border-strong: rgba(255, 255, 255, 0.18);
+    --scrollbar-thumb-fallback: #ff8383;
+    --scrollbar-thumb-hover-fallback: #ff9e9e;
+    --scrollbar-track: rgba(255, 255, 255, 0.06);
+    --scrollbar-glow: rgba(253, 105, 105, 0.45);
+    --accent-color: var(--accent-color, #ff8888);
+}
+
+
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    20%,
+    60% {
+        transform: translateX(-5px);
+    }
+
+    40%,
+    80% {
+        transform: translateX(5px);
+    }
+}
+
+@keyframes slideInFromBottom {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.chat-toggle-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--accent-color, #ff8888);
+    color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 9999;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.chat-toggle-button:hover {
+    transform: scale(1.1);
+    /* 由藍改粉：更亮的主色 */
+    background: color-mix(in srgb, var(--accent-color, #ff8888) 88%, white 12%);
+    box-shadow: 0 0 20px color-mix(in srgb, var(--accent-color, #ff8888) 60%, transparent);
+}
+
+.chat-widget-container {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 320px;
+    height: 400px;
+    display: none;
+    z-index: 9998;
+}
+
+.chat-wrapper {
+    width: 100%;
+    height: 100%;
+    --border-radius: var(--radius-ui);
+}
+
+.chat-content {
+    position: relative;
+    z-index: 4;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: var(--radius-ui);
+}
+
+.chat-content::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    backdrop-filter: blur(var(--chat-blur)) saturate(160%);
+    -webkit-backdrop-filter: blur(var(--chat-blur)) saturate(160%);
+    background:
+        radial-gradient(120% 100% at -10% -10%, rgba(255, 255, 255, 0.10), transparent 40%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.02));
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+}
+
+.chat-content>* {
+    position: relative;
+    z-index: 1;
+}
+
+.chat-header {
+    background: var(--accent-color, #ff8888);
+    color: rgba(26, 24, 24, 1);
+    font-weight: 700;
+    padding: 12px 15px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.chat-scroll-root {
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+}
+
+.chat-scroll-content {
+    position: absolute;
+    inset: 0;
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+}
+
+.chat-box {
+    flex: 1;
+    padding: 10px 15px;
+    font-size: 14px;
+    color: rgba(88, 86, 86, 1);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.015));
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb, var(--scrollbar-thumb-fallback)) var(--scrollbar-track);
+}
+
+/* WebKit 卷軸（維持結構、改顏色） */
+.chat-box:hover::-webkit-scrollbar-thumb {
+    background-image:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.20)),
+        /* 第二層由藍改粉 */
+        linear-gradient(180deg, var(--scrollbar-thumb-hover, var(--scrollbar-thumb-hover-fallback)), color-mix(in srgb, var(--accent-color, #ff8888) 35%, transparent));
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.85),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.30),
+        0 0 18px var(--scrollbar-glow);
+}
+
+.chat-box p {
+    margin: 10px 0;
+    padding: 10px 12px;
+    line-height: 1.6;
+    word-wrap: break-word;
+    background: var(--chat-glass-bg-strong);
+    border: 1px solid var(--chat-border-strong);
+    border-radius: 14px;
+    backdrop-filter: blur(var(--chat-blur-deep)) saturate(170%);
+    -webkit-backdrop-filter: blur(var(--chat-blur-deep)) saturate(170%);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.25),
+        0 6px 18px rgba(0, 0, 0, 0.25);
+}
+
+.chat-box p:first-child {
+    margin-top: 6px;
+}
+
+.chat-box p:last-child {
+    margin-bottom: 6px;
+}
+
+.chat-box b {
+    color: var(--accent-color, #ff8888);
+    /* 由淡粉改成主色強調 */
+}
+
+.chat-input-area {
+    display: flex;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--chat-glass-bg);
+    backdrop-filter: blur(calc(var(--chat-blur) - 2px)) saturate(160%);
+    -webkit-backdrop-filter: blur(calc(var(--chat-blur) - 2px)) saturate(160%);
+}
+
+.chat-input {
+    flex: 1;
+    border: none;
+    padding: 10px 15px;
+    font-size: 14px;
+    background: transparent;
+    color: rgb(255, 255, 255);
+    outline: none;
+    font-weight: bold;
+}
+
+.chat-input.shake {
+    animation: shake 0.5s;
+    border: 1px solid red;
+}
+
+.chat-input::placeholder {
+    color: var(--text-secondary);
+}
+
+.chat-send-button {
+    background: var(--accent-color, #ff8888);
+    color: #1a1a1a;
+    font-weight: 700;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.chat-send-button:hover {
+    /* 由藍改粉 */
+    background: color-mix(in srgb, var(--accent-color, #ff8888) 90%, white 10%);
+}
+
+.chat-send-button:active {
+    transform: scale(0.95);
+}
+
+.code-container {
+    position: relative;
+    margin: 10px 0;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    overflow: hidden;
+    backdrop-filter: blur(calc(var(--chat-blur) - 2px)) saturate(160%);
+    -webkit-backdrop-filter: blur(calc(var(--chat-blur) - 2px)) saturate(160%);
+}
+
+.code-container pre {
+    margin: 0;
+    padding: 14px;
+    overflow-x: auto;
+}
+
+.code-container code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    font-size: 14px;
+    display: block;
+    color: rgba(88, 86, 86, 1) !important;
+}
+
+.copy-button {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    padding: 3px 8px;
+    background-color: var(--accent-color, #ff8888);
+    color: #1a1a1a;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    opacity: 0.95;
+    transition: opacity 0.2s, background-color 0.2s;
+}
+
+.copy-button:hover {
+    opacity: 1;
+    /* 由藍改粉 */
+    background-color: color-mix(in srgb, var(--accent-color, #ff8888) 88%, white 12%);
+}
+
+.copy-button:active {
+    transform: scale(0.95);
+}
+
+.inline-code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.10);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.message.model {
+    opacity: 0;
+    animation: slideInFromBottom 0.5s ease-out forwards;
+}
+
+/* ===== Chat 自訂卷軸（套粉紅） ===== */
+.lg-scrollbar--chat {
+    position: absolute;
+    top: 6px;
+    bottom: 6px;
+    right: 6px;
+    width: 12px;
+    z-index: 10;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .25s ease;
+}
+
+.lg-scrollbar--chat.lg-visible {
+    opacity: 1;
+}
+
+.lg-scrollbar--chat.lg-hidden {
+    display: none;
+}
+
+.lg-scrollbar--chat .lg-scrollbar-track {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 12px;
+    border-radius: 999px;
+    backdrop-filter: blur(14px) saturate(180%);
+    -webkit-backdrop-filter: blur(14px) saturate(180%);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04));
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+        0 4px 18px rgba(0, 0, 0, 0.25);
+    pointer-events: auto;
+}
+
+.lg-scrollbar--chat .lg-scrollbar-thumb {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 12px;
+    height: 48px;
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: padding-box;
+    background-image:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.15)),
+        /* 第二層由藍改粉 */
+        linear-gradient(180deg, var(--accent-color, #ff8888), color-mix(in srgb, var(--accent-color, #ff8888) 22%, transparent));
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.75),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.25),
+        0 0 12px var(--scrollbar-glow);
+    transition: box-shadow .15s ease, background-image .15s ease, transform .05s linear;
+    cursor: grab;
+    pointer-events: auto;
+}
+
+.lg-scrollbar--chat .lg-scrollbar-thumb:hover {
+    background-image:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.25)),
+        linear-gradient(180deg, color-mix(in srgb, var(--accent-color, #ff8888) 70%, transparent), color-mix(in srgb, var(--accent-color, #ff8888) 35%, transparent));
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.85),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.30),
+        0 0 16px color-mix(in srgb, var(--accent-color, #ff8888) 45%, transparent);
+}
+
+.lg-scrollbar--chat .lg-scrollbar-thumb:active {
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.9),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.35),
+        0 0 18px color-mix(in srgb, var(--accent-color, #ff8888) 60%, transparent);
+}
+
+html.lg-dragging,
+html.lg-dragging * {
+    cursor: grabbing !important;
+}
+
+.chat-hint {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    padding: 8px 14px;
+    font-size: 14px;
+    font-weight: 600;
+    color: rgb(255, 255, 255);
+    border-radius: 12px;
+    z-index: 10000;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity .5s ease, transform .5s ease;
+    background: var(--chat-glass-bg-strong);
+    backdrop-filter: blur(var(--chat-blur)) saturate(160%);
+    -webkit-backdrop-filter: blur(var(--chat-blur)) saturate(160%);
+    border: 1px solid var(--chat-border-strong);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.25),
+        0 6px 18px rgba(0, 0, 0, 0.25);
+    pointer-events: none;
+}
+
+.chat-hint::after {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    right: 24px;
+    border-width: 8px 8px 0 8px;
+    border-style: solid;
+    border-color: var(--chat-glass-bg-strong) transparent transparent transparent;
+    filter: drop-shadow(0 -1px 1px rgba(0, 0, 0, 0.2));
+}
+
+.chat-hint.show {
+    opacity: 1;
+    transform: translateY(0);
+}

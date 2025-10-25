@@ -1,30 +1,110 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 
 <head>
   <meta charset="UTF-8" />
+  <title>張師社會主義民主共和國 - 官方網站</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>那一夜紅旗降下｜USS​​R 紀念頁</title>
+
+  <link rel="icon" type="image/x-icon" href="static/images/favicon.ico">
   <link rel="stylesheet" href="static/css/style.css" />
-  <script defer src="static/js/main.js"></script>
+  <link rel="stylesheet" href="static/css/chat.css" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+TC:wght@400;700&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <!-- 液態玻璃濾鏡 -->
+  <svg style="position: fixed; width: 0; height: 0" aria-hidden="true">
+    <defs>
+      <filter id="liquid_glass_filter" x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox">
+        <feTurbulence type="fractalNoise" baseFrequency="0.01 0.015" numOctaves="2" seed="10" result="noise">
+          <animate attributeName="baseFrequency" dur="16s" values="0.01 0.015; 0.015 0.01; 0.01 0.015"
+            repeatCount="indefinite" />
+        </feTurbulence>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="30" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+    </defs>
+  </svg>
 </head>
 
-<body>
+<body class="no-native-scroll">
   <div class="full-bg">
-    <img src="static/images/background.png" alt="Red Background" />
+    <img src="static/images/background.png" />
   </div>
 
-  <main class="main-container">
-    <header class="content-card">
-      <h1 class="title">那一夜，紅旗降下</h1>
-      <p>In memory of the Union of Soviet Socialist Republics — 1922–1991</p>
-    </header>
+  <!-- ✅ 主頁滾動區 -->
+  <div id="lg-scroll-root" class="lg-scroll-root" role="region" aria-label="頁面內容可滾動區">
+    <div id="lg-scroll-content" class="lg-scroll-content">
+      <div class="main-container" id="main-content">
+        <header class="content-card">
+          <h1>紅色宇宙論</h1>
+        </header>
 
-    <section class="content-card center-text">
-      <h2 class="quote">
-        </h2>
-    </section>
-  </main>
+        <!-- ✅ Markdown 注入區（沿用原 quotes-text-container） -->
+        <section class="content-card">
+          <div id="quotes-text-container" class="liquid-glass-md"></div>
+        </section>
+
+        <div class="content-card" style="text-align: center;">
+          <p style="font-size: 14px; color: var(--text-secondary);">© 2025 張師社會主義民主共和國</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ 自訂滾動條 -->
+  <div class="lg-scrollbar" aria-hidden="true">
+    <div class="lg-scrollbar-track"></div>
+    <div class="lg-scrollbar-thumb" role="presentation"></div>
+  </div>
+
+  <!-- ✅ 聊天模組 -->
+  <div id="chat-toggle" class="chat-toggle-button" aria-label="開啟聊天室">
+    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M3 15a4 4 0 0 0 4 4h2l3 3v-3h5a4 4 0 0 0 4-4V7a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4z" />
+    </svg>
+  </div>
+
+  <div id="chat-hint" class="chat-hint">要不要和思想小助手聊幾句？</div>
+
+  <div id="chat-widget" class="chat-widget-container" role="dialog" aria-label="AI 聊天室">
+    <div class="liquid_glass-wrapper chat-wrapper">
+      <div class="liquid_glass-outer"></div>
+      <div class="liquid_glass-cover"></div>
+      <div class="liquid_glass-reflect"></div>
+      <div class="liquid_glass-sharp"></div>
+
+      <div class="chat-content">
+        <div class="chat-header">思想小助手</div>
+
+        <div id="chat-scroll-root" class="chat-scroll-root" role="region" aria-label="聊天訊息滾動區">
+          <div id="chat-scroll-content" class="chat-scroll-content">
+            <div id="chat-box" class="chat-box"></div>
+          </div>
+          <div class="lg-scrollbar lg-scrollbar--chat" aria-hidden="true">
+            <div class="lg-scrollbar-track"></div>
+            <div class="lg-scrollbar-thumb" role="presentation"></div>
+          </div>
+        </div>
+
+        <div class="chat-input-area">
+          <input id="user-input" type="text" placeholder="輸入訊息..." class="chat-input" aria-label="訊息輸入">
+          <button id="send-button" class="chat-send-button">送出</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script src="static/js/lg-scrollbar.js"></script>
+  <script src="static/js/SYSTEM_INSTRUCTION.js"></script>
+  <script src="static/js/chat.js"></script>
+  <script src="static/js/theory.js"></script>
 </body>
 
 </html>

@@ -1,86 +1,38 @@
 :root {
-    --accent-color: #b00000;
-    --accent-strong: color-mix(in srgb, var(--accent-color) 80%, white 10%);
+    /* === 粉紅主題色票（統一色系） === */
+    --accent-color: #ff8888;
+    /* 主粉紅：鮮明 */
+    --accent-strong: color-mix(in srgb, var(--accent-color) 85%, white 15%);
+    --accent-soft: color-mix(in srgb, var(--accent-color) 40%, white 10%);
+    --accent-glow: color-mix(in srgb, var(--accent-color) 35%, transparent);
+    --accent-shadow: color-mix(in srgb, var(--accent-color) 25%, black 45%);
+
+    /* === 文字與背景 === */
     --text-primary: #ffffff;
     --text-secondary: rgba(255, 255, 255, 0.78);
+    --bg-dark-overlay: rgba(0, 0, 0, 0.55);
+    /* 微粉的卡片霧面底，保持可讀性 */
+    --content-bg: rgba(255, 255, 255, 0.06);
+
+    /* === 圓角與版心 === */
     --radius-ui: 24px;
+    --border-radius: var(--radius-ui);
+    /* 修正原本樣式中使用 var(--border-radius) 的地方 */
+    --maxw-content: 700px;
 }
 
-/* === 背景 === */
-.full-bg {
-    position: fixed;
-    inset: 0;
-    overflow: hidden;
-    z-index: -2;
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.full-bg img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    filter: brightness(40%) contrast(120%) saturate(120%) blur(3px);
-}
-
-.full-bg::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, rgba(176, 0, 0, 0.4), rgba(0, 0, 0, 0.85));
-    z-index: -1;
-}
-
-/* === 主體 === */
-body {
-    margin: 0;
-    font-family: "Noto Sans TC", "Inter", sans-serif;
-    color: var(--text-primary);
-    background: black;
-    animation: fadeIn 2s ease-out;
-}
-
-.main-container {
-    max-width: 700px;
-    margin: 120px auto;
-    padding: 0 20px;
-}
-
-.content-card {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(14px) saturate(150%);
-    border-radius: var(--radius-ui);
-    padding: 40px;
-    text-align: center;
-    box-shadow: 0 4px 18px rgba(176, 0, 0, 0.25);
-    animation: fadeInScale 1.5s ease-out;
-}
-
-/* === 標題 === */
-.title {
-    font-size: clamp(32px, 4vw, 48px);
-    color: #ff8a8a;
-    margin-bottom: 10px;
-    text-shadow: 0 0 12px rgba(255, 0, 0, 0.4);
-    animation: titleFade 3s ease-in;
-}
-
-header p {
-    color: var(--text-secondary);
-    margin: 0;
-    animation: fadeIn 4s ease-in;
-}
-
-/* === 文案 === */
-.quote {
-    font-size: 20px;
-    line-height: 1.9;
-    font-weight: 500;
-    color: var(--text-secondary);
-    margin-top: 40px;
-    opacity: 0;
-    animation: quoteFade 10s ease-in forwards 2s;
-}
-
-/* === 動畫 === */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -94,7 +46,7 @@ header p {
 @keyframes fadeInScale {
     from {
         opacity: 0;
-        transform: scale(0.97);
+        transform: scale(0.95);
     }
 
     to {
@@ -103,42 +55,553 @@ header p {
     }
 }
 
-@keyframes titleFade {
-    0% {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
+* {
+    box-sizing: border-box;
+}
 
-    100% {
-        opacity: 1;
-        transform: translateY(0);
+body {
+    margin: 0;
+    color: var(--text-primary);
+    font-family: "Noto Sans TC", "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: #000;
+    animation: fadeIn 1s ease-out;
+    scrollbar-width: none;
+}
+
+body.no-native-scroll {
+    overflow: hidden;
+}
+
+body::-webkit-scrollbar {
+    display: none;
+}
+
+p {
+    margin: 0;
+    line-height: 1.7;
+}
+
+.sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    border: 0 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .lg-scrollbar,
+    .lg-scrollbar-thumb {
+        transition: none;
     }
 }
 
-@keyframes quoteFade {
-    0% {
-        opacity: 0;
-    }
-
-    50% {
-        opacity: 1;
-    }
-
-    100% {
-        opacity: 0;
-    }
+/* ===== 背景（加入統一粉紅氛圍） ===== */
+.full-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -2;
+    overflow: hidden;
 }
 
-/* === 結尾淡出整頁 === */
-@keyframes pageFadeOut {
-    to {
-        opacity: 0;
-    }
+.full-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(60%) grayscale(18%) blur(2px);
+    transform: scale(1.03);
 }
 
-/* 響應式 */
-@media (max-width: 600px) {
-    .quote {
-        font-size: 18px;
-    }
+.full-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(180deg, color-mix(in srgb, var(--accent-color) 8%, transparent), transparent 40%),
+        var(--bg-dark-overlay);
+    z-index: -1;
+}
+
+/* ===== 液態玻璃：統一粉紅調光澤 ===== */
+.liquid_glass-wrapper {
+    position: relative;
+    display: flex;
+    overflow: hidden;
+    border-radius: var(--border-radius);
+    isolation: isolate;
+    box-shadow: 0 4px 14px color-mix(in srgb, var(--accent-color) 22%, transparent);
+}
+
+.liquid_glass-outer {
+    backdrop-filter: blur(20px) saturate(180%);
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: var(--border-radius);
+    background: transparent;
+    pointer-events: none;
+}
+
+.liquid_glass-cover {
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: var(--border-radius);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid color-mix(in srgb, var(--accent-color) 30%, white 10%);
+    pointer-events: none;
+}
+
+.liquid_glass-sharp {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    box-shadow:
+        inset 1px 1px 0 0 color-mix(in srgb, var(--accent-color) 25%, white 60%),
+        inset -1px -1px 0 0 color-mix(in srgb, var(--accent-color) 20%, white 50%);
+    border-radius: var(--border-radius);
+    pointer-events: none;
+}
+
+.liquid_glass-reflect {
+    position: absolute;
+    inset: 1px;
+    z-index: 2;
+    box-shadow: inset 0 0 10px 0 color-mix(in srgb, var(--accent-color) 18%, transparent);
+    background: radial-gradient(100% 100% at -5% -5%, color-mix(in srgb, var(--accent-color) 24%, white 0%), transparent 40%);
+    border-radius: var(--border-radius);
+    pointer-events: none;
+    mix-blend-mode: screen;
+}
+
+.icon {
+    z-index: 4;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ===== 版心與卡片 ===== */
+.main-container {
+    width: 100%;
+    max-width: var(--maxw-content);
+    margin: 40px auto 120px;
+    padding: 0 20px;
+}
+
+.content-card {
+    background: var(--content-bg);
+    backdrop-filter: blur(5px);
+    border-radius: var(--radius-ui);
+    padding: 30px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 15px color-mix(in srgb, var(--accent-color) 16%, transparent);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: slideInUp 0.6s ease-out backwards;
+}
+
+header.content-card {
+    animation-delay: 0.1s;
+}
+
+.main-container>div:nth-child(2) {
+    animation-delay: 0.3s;
+}
+
+section:nth-child(3) {
+    animation-delay: 0.5s;
+}
+
+section:nth-child(4) {
+    animation-delay: 0.7s;
+}
+
+.main-container>div:last-child {
+    animation-delay: 0.9s;
+}
+
+.content-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 26px color-mix(in srgb, var(--accent-color) 35%, transparent);
+}
+
+/* ===== 標題與段落（統一粉紅主色） ===== */
+header h1 {
+    font-size: clamp(32px, 4vw, 48px);
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 8px;
+    color: var(--accent-strong);
+    text-shadow: 0 0 10px var(--accent-glow);
+}
+
+header p {
+    font-size: 18px;
+    text-align: center;
+    color: var(--text-secondary);
+    margin-bottom: 30px;
+}
+
+section h2 {
+    font-size: clamp(24px, 3vw, 30px);
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: var(--accent-strong);
+}
+
+section p {
+    color: var(--text-secondary);
+}
+
+/* ===== 自製卷軸（粉紅） ===== */
+.lg-scroll-root {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.lg-scroll-content {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+}
+
+.lg-scrollbar {
+    position: fixed;
+    top: 0;
+    right: 12px;
+    bottom: 0;
+    width: 14px;
+    z-index: 30;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .25s ease;
+}
+
+.lg-scrollbar.lg-visible {
+    opacity: 1;
+}
+
+.lg-scrollbar.lg-hidden {
+    display: none;
+}
+
+.lg-scrollbar-track {
+    position: absolute;
+    left: 0;
+    top: 16px;
+    bottom: 16px;
+    width: 14px;
+    border-radius: 999px;
+    backdrop-filter: blur(14px) saturate(180%);
+    -webkit-backdrop-filter: blur(14px) saturate(180%);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.05));
+    border: 1px solid color-mix(in srgb, var(--accent-color) 28%, white 20%);
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+        0 4px 18px rgba(0, 0, 0, 0.25);
+    pointer-events: auto;
+}
+
+.lg-scrollbar-thumb {
+    position: absolute;
+    left: 0;
+    top: 16px;
+    width: 14px;
+    height: 48px;
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: padding-box;
+    background-image:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.15)),
+        linear-gradient(180deg, var(--accent-strong), color-mix(in srgb, var(--accent-color) 24%, transparent));
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.75),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.25),
+        0 0 12px var(--accent-glow);
+    transition: box-shadow .15s ease, background-image .15s ease, transform .05s linear;
+    cursor: grab;
+    pointer-events: auto;
+}
+
+html.lg-dragging,
+html.lg-dragging * {
+    cursor: grabbing !important;
+}
+
+.lg-scrollbar-thumb:hover {
+    background-image:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0.25)),
+        linear-gradient(180deg, color-mix(in srgb, var(--accent-color) 78%, white 5%), color-mix(in srgb, var(--accent-color) 35%, transparent));
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.85),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+        0 0 16px color-mix(in srgb, var(--accent-color) 50%, transparent);
+}
+
+.lg-scrollbar-thumb:active {
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.9),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.35),
+        0 0 18px color-mix(in srgb, var(--accent-color) 55%, transparent);
+}
+
+/* ===== Chat 元件滾動限制 ===== */
+#chat-widget,
+#chat-widget * {
+    overscroll-behavior: contain;
+}
+
+/* ===== 登入彈窗（粉紅） ===== */
+.login-toggle-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px 18px;
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    background: var(--accent-strong);
+    color: #1a1a1a;
+    cursor: pointer;
+    z-index: 10000;
+    transition: background 0.25s ease, transform 0.2s ease;
+}
+
+.login-toggle-btn:hover {
+    background: color-mix(in srgb, var(--accent-color) 90%, white 10%);
+    transform: scale(1);
+}
+
+.login-modal {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 10001;
+}
+
+.login-modal.hidden {
+    display: none;
+}
+
+.login-card {
+    width: min(92vw, 380px);
+    padding: 28px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid color-mix(in srgb, var(--accent-color) 28%, white 15%);
+    animation: fadeInScale .25s ease-out;
+}
+
+.login-content h2 {
+    color: var(--accent-strong);
+    margin-bottom: 8px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.login-content p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.login-input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 14px;
+    border-radius: 12px;
+    border: 1px solid color-mix(in srgb, var(--accent-color) 24%, white 20%);
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-primary);
+    font-size: 14px;
+    transition: border .15s ease, box-shadow .15s ease, background .15s ease;
+    outline: none;
+}
+
+.login-input::placeholder {
+    color: var(--text-secondary);
+}
+
+.login-input:focus {
+    border: 1px solid color-mix(in srgb, var(--accent-color) 38%, white 18%);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.login-btn {
+    width: 100%;
+    padding: 12px;
+    font-weight: 700;
+    border: none;
+    border-radius: 12px;
+    background: var(--accent-strong);
+    color: #1a1a1a;
+    cursor: pointer;
+    transition: background .2s ease, transform .05s linear;
+}
+
+.login-btn:hover {
+    background: color-mix(in srgb, var(--accent-color) 92%, white 8%);
+}
+
+.login-btn:active {
+    transform: scale(1);
+}
+
+.login-close-btn {
+    margin-top: 10px;
+    width: 100%;
+    padding: 10px;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 10px;
+    transition: background .15s ease;
+}
+
+.login-close-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.login-hint {
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+/* ===== 語錄區（粉紅卡框與控制） ===== */
+.quotes-container {
+    width: 100%;
+    max-width: 480px;
+    height: 600px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px color-mix(in srgb, var(--accent-color) 18%, transparent);
+}
+
+.quotes-container img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.quotes-controls {
+    margin-top: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.page-btn {
+    padding: 8px 18px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+    background: var(--accent-strong);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    backdrop-filter: blur(12px) saturate(150%);
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    transition: background 0.25s ease, transform 0.15s ease, box-shadow 0.25s ease;
+}
+
+.page-btn:hover {
+    background: color-mix(in srgb, var(--accent-color) 88%, white 12%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px color-mix(in srgb, var(--accent-color) 40%, transparent);
+}
+
+.page-btn:active {
+    transform: scale(0.97);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+/* ===== 粉紅強調連結與 Markdown 容器 ===== */
+.liquid-glass-link {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 12px;
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    background: rgba(255, 255, 255, 0.14);
+    color: var(--accent-strong);
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    vertical-align: middle;
+}
+
+.liquid-glass-link:hover {
+    background: rgba(255, 255, 255, 0.24);
+    color: #fff;
+}
+
+.liquid-glass-md {
+    padding: 20px;
+    border-radius: 16px;
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    line-height: 1.8;
+}
+
+.liquid-glass-md h1,
+.liquid-glass-md h2,
+.liquid-glass-md h3 {
+    color: var(--accent-strong);
+    margin-top: 16px;
+    margin-bottom: 8px;
+}
+
+.liquid-glass-md p {
+    margin: 8px 0;
+}
+
+.liquid-glass-md a {
+    color: var(--accent-strong);
+    text-decoration: underline;
+}
+
+/* ===== 語錄 Header ===== */
+.quotes-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.quotes-header h2 {
+    margin: 0;
 }
