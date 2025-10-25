@@ -1,17 +1,7 @@
-/* 自製 Liquid Glass 虛擬捲動軸（可重複實例：主頁面 + 聊天室 + 張國語錄文字版） */
+/* 自製 Liquid Glass 虛擬捲動軸（可重複實例：主頁面 + 聊天室 + 紅色宇宙論文字版） */
 (function () {
     'use strict';
 
-    /**
-     * 建立一個可重複使用的虛擬捲動實例
-     * @param {Object} opts
-     * @param {HTMLElement} opts.root      － 滾動視窗（固定尺寸／裁切區）
-     * @param {HTMLElement} opts.content   － 內容容器（實際位移 transform）
-     * @param {HTMLElement} opts.bar       － 捲動軸外框（含 track + thumb）
-     * @param {HTMLElement} opts.track     － 捲動軌道
-     * @param {HTMLElement} opts.thumb     － 捲動滑塊
-     * @param {boolean}     opts.stopBubbleOnWheel － 是否攔截滾輪冒泡（避免影響外層）
-     */
     function createLGScroll(opts) {
         const {
             root, content, bar, track, thumb,
@@ -24,7 +14,6 @@
 
         if (!root || !content || !bar || !track || !thumb) return null;
 
-        // 狀態
         let viewportH = 0, contentH = 0, maxScroll = 0, trackH = 0, thumbH = 0;
         let scrollY = 0, targetY = 0;
         let rafId = null, lastActiveTs = 0;
@@ -108,7 +97,6 @@
             }, Math.ceil(left) + 10);
         }
 
-        // === 事件 ===
         const wheelHandler = (e) => {
             e.preventDefault();
             if (stopBubbleOnWheel) e.stopPropagation();
@@ -119,11 +107,9 @@
         };
         root.addEventListener('wheel', wheelHandler, { passive: false });
 
-        // 鍵盤
         window.addEventListener('keydown', (e) => {
             const ae = document.activeElement;
             if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable)) return;
-
             const hovered = root.matches(':hover');
             if (!hovered) return;
 
@@ -140,7 +126,6 @@
             if (handled) e.preventDefault();
         }, { passive: false });
 
-        // 觸控
         let touchStartY = 0;
         let touchStartScroll = 0;
         root.addEventListener('touchstart', (e) => {
@@ -157,7 +142,6 @@
             if (stopBubbleOnWheel) e.stopPropagation();
         }, { passive: true });
 
-        // 軌道點擊
         track.addEventListener('mousedown', (e) => {
             if (e.target === thumb) return;
             const rect = track.getBoundingClientRect();
@@ -171,7 +155,6 @@
             e.preventDefault();
         });
 
-        // 滑塊拖曳
         thumb.addEventListener('mousedown', (e) => {
             dragging = true;
             dragStartY = e.clientY;
@@ -194,12 +177,10 @@
             maybeAutoHideSoon();
         });
 
-        // ResizeObserver
         window.addEventListener('resize', measure);
         const ro = new ResizeObserver(measure);
         ro.observe(content);
 
-        // 初始化
         measure();
         applyScrollImmediate(0);
         maybeAutoHideSoon();
@@ -240,18 +221,17 @@
         minThumb: 24,
     });
 
-    // ==== 張國語錄文字版實例 ====
-    const quotesRoot = document.getElementById('quotes-text-root');
-    const quotes = createLGScroll({
-        root: quotesRoot,
-        content: quotesRoot ? quotesRoot.querySelector('.lg-scroll-content') : null,
-        bar: quotesRoot ? quotesRoot.querySelector('.lg-scrollbar') : null,
-        track: quotesRoot ? quotesRoot.querySelector('.lg-scrollbar .lg-scrollbar-track') : null,
-        thumb: quotesRoot ? quotesRoot.querySelector('.lg-scrollbar .lg-scrollbar-thumb') : null,
+    // ==== 紅色宇宙論（theory）文字版實例 ====
+    const theoryRoot = document.getElementById('theory-text-root');
+    const theory = createLGScroll({
+        root: theoryRoot,
+        content: theoryRoot ? theoryRoot.querySelector('.lg-scroll-content') : null,
+        bar: theoryRoot ? theoryRoot.querySelector('.lg-scrollbar') : null,
+        track: theoryRoot ? theoryRoot.querySelector('.lg-scrollbar .lg-scrollbar-track') : null,
+        thumb: theoryRoot ? theoryRoot.querySelector('.lg-scrollbar .lg-scrollbar-thumb') : null,
         stopBubbleOnWheel: false,
     });
 
-    // 聊天室自動滾到底
     (function autoStickBottom() {
         if (!chatRoot || !chat) return;
         const chatBox = document.getElementById('chat-box');
@@ -272,6 +252,6 @@
         }
     })();
 
-    // 對外暴露
-    window.LGScroll = { main, chat, quotes };
+    // ✅ 對外暴露（已改為 theory）
+    window.LGScroll = { main, chat, theory };
 })();

@@ -1,4 +1,4 @@
-// static/js/quotes-router.js
+// static/js/theory.js
 async function loadMarkdown(path, containerId) {
     try {
         // 1️⃣ 取得 Markdown 檔案
@@ -11,9 +11,10 @@ async function loadMarkdown(path, containerId) {
         container.innerHTML = marked.parse(text);
 
         // 3️⃣ 若有 Liquid Glass Scroll 系統，重新計算高度
-        if (window.LGScroll && window.LGScroll.quotes) {
-            window.LGScroll.quotes.measure();
+        if (window.LGScroll && window.LGScroll.theory) {
+            window.LGScroll.theory.measure();
         }
+
     } catch (err) {
         console.error("載入 Markdown 時發生錯誤：", err);
         const container = document.getElementById(containerId);
@@ -26,5 +27,5 @@ async function loadMarkdown(path, containerId) {
 
 // ✅ 當頁面載入完成時立即渲染 Markdown
 window.addEventListener("DOMContentLoaded", () => {
-    loadMarkdown("/assets/紅色宇宙論.md", "quotes-text-container");
+    loadMarkdown("/assets/紅色宇宙論.md", "theory-text-container");
 });
