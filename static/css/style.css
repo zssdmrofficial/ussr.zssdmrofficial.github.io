@@ -69,6 +69,13 @@ body {
 }
 
 body.no-native-scroll {
+    overflow: hidden !important;
+    /* 確保沒有任何原生的滾動 */
+    /* 確保在 WebKit 瀏覽器中，就算沒有移除 scrollbar，也不會有內容溢出 */
+    -webkit-overflow-scrolling: auto;
+}
+
+body.no-native-scroll {
     overflow: hidden;
 }
 
