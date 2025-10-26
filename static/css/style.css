@@ -178,9 +178,9 @@ p {
 /* ===== 版心與卡片 ===== */
 .main-container {
     width: 100%;
-    max-width: var(--maxw-content);
     margin: 40px auto 120px;
-    padding: 0 20px;
+    padding: 0;
+    /* <-- 關鍵：移除左右 padding */
 }
 
 .content-card {
