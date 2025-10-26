@@ -124,21 +124,19 @@
     border-bottom: 1px solid rgba(0, 0, 0, 0.12);
 }
 
+/* ✅ --- 貼上這段修正後的程式碼 --- */
 .chat-scroll-root {
     position: relative;
     flex: 1;
-    overflow: hidden;
-}
-
-.chat-scroll-content {
-    position: absolute;
-    inset: 0;
-    will-change: transform;
-    transform: translate3d(0, 0, 0);
+    /* 保留，使其在父層中佔據剩餘空間 */
+    overflow-y: auto;
+    /* 關鍵：允許垂直方向自動出現滾動條 */
+    overflow-x: hidden;
+    /* 建議：禁止水平滾動 */
 }
 
 .chat-box {
-    flex: 1;
+    /* flex: 1;  <-- 關鍵：移除這行干擾的樣式 */
     padding: 10px 15px;
     font-size: 14px;
     color: rgba(88, 86, 86, 1);
