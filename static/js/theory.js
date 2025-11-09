@@ -20,7 +20,7 @@ async function loadMarkdown(path, containerId) {
         const container = document.getElementById(containerId);
         if (container) {
             container.innerHTML =
-                "<p style='color:red;'>紅色宇宙論載入失敗 (｡>﹏<｡)</p>";
+                "<p style='color:red;'>紅色宇宙論載入失敗</p>";
         }
     }
 }
