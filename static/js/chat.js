@@ -53,59 +53,50 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+// ====== 請用這個新版本，取代您 chat.js 中舊的 markdownToHtml 函數 ======
+
+function escapeHtml(text) {
+    if (typeof text !== "string") return "";
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+/**
+ * 將 Markdown 文字轉換為 HTML。
+ * 這個版本只使用 marked.js 進行解析，沒有進行安全過濾。
+ * @param {string} mdText - 包含 Markdown 格式的原始文字。
+ * @returns {string} - 轉換後的 HTML 字串。
+ */
 function markdownToHtml(mdText) {
     if (typeof mdText !== "string") return "";
 
-    const codeBlocks = [];
-    let idx = 0;
-
-    let htmlText = mdText.replace(/```([^\n`]*)\r?\n([\s\S]*?)\r?\n?```/g, (_match, lang, body) => {
-        const key = `§§CODEBLOCK:${idx++}:${Math.random().toString(36).slice(2, 8)}§§`;
-        codeBlocks.push({
-            key,
-            lang: (lang || "").trim(),
-            code: body.replace(/\s+$/, ""),
-        });
-        return key;
+    // 1. 使用 Marked.js 將 Markdown 轉換為 HTML
+    //    - gfm: true 啟用 GitHub 風格的 Markdown (如表格、刪除線)
+    //    - breaks: true 讓單純的換行也變成 <br> 標籤，這在聊天室中更自然
+    const rawHtml = marked.parse(mdText, {
+        gfm: true,
+        breaks: true,
     });
 
-    htmlText = htmlText.replace(/`([^`]+)`/g, (_m, code) => `<code class="inline-code">${escapeHtml(code)}</code>`);
-
-    htmlText = htmlText.replace(/\*\*(.*?)\*\*|__(.*?)__/g, (_m, g1, g2) => `<b>${escapeHtml(g1 || g2 || "")}</b>`);
-
-    htmlText = htmlText.replace(/\*(.*?)\*|_(.*?)_/g, (_m, g1, g2) => `<i>${escapeHtml(g1 || g2 || "")}</i>`);
-
-    htmlText = htmlText.replace(
-        /\[([^\]]+)\]\(([^)\s]+)\)/g,
-        (_m, label, url) =>
-            `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>`
+    // 2. (可選但建議) 為了兼容您原有的複製按鈕功能，
+    //    我們將 Marked.js 生成的標準 <pre><code> 結構，
+    //    替換為您自定義的 <div class="code-container"> 結構。
+    const finalHtml = rawHtml.replace(
+        /<pre><code(?:\s+class="language-([^"]*)")?>((?:.|\n|\r)*?)<\/code><\/pre>/gi,
+        (match, lang, code) => {
+            // Marked.js 已經對 code 內容進行了 HTML 轉義，所以這裡的內容是安全的
+            const language = lang ? escapeHtml(lang) : "";
+            return (
+                `<div class="code-container">` +
+                `<button type="button" class="copy-button">複製</button>` +
+                `<pre><code class="code-content"${language ? ` data-lang="${language}"` : ""}>${code}</code></pre>` +
+                `</div>`
+            );
+        }
     );
 
-    htmlText = htmlText.replace(/(?:^|\r?\n)([-*+]\s+.+(?:\r?\n[-*+]\s+.+)*)/g, (block) => {
-        const items = block
-            .trim()
-            .split(/\r?\n/)
-            .map((line) => `<li>${escapeHtml(line.replace(/^[-*+]\s+/, ""))}</li>`)
-            .join("");
-        return `\n<ul>${items}</ul>`;
-    });
-
-    htmlText = htmlText.replace(/\r?\n/g, "<br>");
-
-    for (const { key, lang, code } of codeBlocks) {
-        const blockHtml =
-            `<div class="code-container">` +
-            `<button type="button" class="copy-button">複製</button>` +
-            `<pre><code class="code-content"${lang ? ` data-lang="${escapeHtml(lang)}"` : ""}>${escapeHtml(code)}</code></pre>` +
-            `</div>`;
-
-        htmlText = htmlText.split(key).join(blockHtml);
-    }
-
-    htmlText = htmlText.replace(/<br>\s*(<div class="code-container")/g, "$1");
-    htmlText = htmlText.replace(/(<\/div>)\s*<br>/g, "$1");
-
-    return htmlText;
+    return finalHtml;
 }
 
 // ======= 兼容性備用複製函式（同步、回傳 boolean） =======
@@ -244,12 +235,16 @@ function displayInitialMessage() {
     chatBoxEl.innerHTML += `<p><b>小助手:</b> ${html}</p>`;
     chatBoxEl.scrollTo({ top: chatBoxEl.scrollHeight, behavior: 'smooth' });
 }
+// ====== 請用這個新版本，取代您 chat.js 中舊的 renderMessage 函數 ======
 
 function renderMessage(role, content, isError = false) {
     const who = role === "user" ? "你" : "小助手";
     let html;
 
-    const messageEl = document.createElement('p');
+    // ★ 核心修改：將 p 改為 div ★
+    // div 是一個容器，可以合法地包含由 Marked.js 產生的 p, ul, pre 等標籤。
+    const messageEl = document.createElement('div');
+    messageEl.className = 'message-wrapper'; // 給它一個 class，方便 CSS 定位
 
     if (isError) {
         html = escapeHtml(content);
@@ -259,7 +254,8 @@ function renderMessage(role, content, isError = false) {
         html = escapeHtml(content);
         messageEl.innerHTML = `<b>${who}:</b> ${html}`;
     } else {
-        html = markdownToHtml(content);
+        html = markdownToHtml(content); // markdownToHtml 函數保持不變
+        // 這裡的注入格式和您原來完全一樣，只是容器變了
         messageEl.innerHTML = `<b>${who}:</b> ${html}`;
     }
 
@@ -267,7 +263,6 @@ function renderMessage(role, content, isError = false) {
 
     chatBoxEl.scrollTo({ top: chatBoxEl.scrollHeight, behavior: 'smooth' });
 }
-
 async function callApiWithRetry(body, maxRetries = Infinity) {
     let attempt = 0;
     while (attempt < maxRetries) {
@@ -365,8 +360,9 @@ async function sendMessage() {
     inputEl.disabled = true;
     sendButtonEl.disabled = true;
 
-    const loadingEl = document.createElement("p");
-    loadingEl.id = "loading-message";
+    const loadingEl = document.createElement("div");       // 1. 將 p 改為 div
+    loadingEl.className = 'message-wrapper';               // 2. 加上 message-wrapper class
+    loadingEl.id = "loading-message";                      //    (id 必須保留，這樣才能在之後移除它)
     loadingEl.innerHTML = `<b>小助手:</b> <i>思想小助手回應中...</i>`;
     chatBoxEl.appendChild(loadingEl);
     chatBoxEl.scrollTo({ top: chatBoxEl.scrollHeight, behavior: 'smooth' });

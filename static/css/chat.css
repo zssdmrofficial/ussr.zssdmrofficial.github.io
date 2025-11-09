@@ -158,7 +158,9 @@
         0 0 18px var(--scrollbar-glow);
 }
 
-.chat-box p {
+/* 修改後的 CSS */
+.chat-box .message-wrapper {
+    /* ★ 修改這裡的選擇器 */
     margin: 10px 0;
     padding: 10px 12px;
     line-height: 1.6;
