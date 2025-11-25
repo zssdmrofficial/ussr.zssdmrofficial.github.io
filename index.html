@@ -16,7 +16,7 @@
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+TC:wght@400;700&display=swap"
     rel="stylesheet" />
 
-  <!-- 液態玻璃濾鏡 (保留) -->
+
   <svg style="position: fixed; width: 0; height: 0" aria-hidden="true">
     <defs>
       <filter id="liquid_glass_filter" x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox">
@@ -30,15 +30,13 @@
   </svg>
 </head>
 
-<!-- 移除了 class="no-native-scroll" -->
 
 <body>
   <div class="full-bg">
     <img src="static/images/background.png" />
   </div>
 
-  <!-- ✅ 主頁內容區 (已簡化) -->
-  <!-- 移除了 lg-scroll-root 和 lg-scroll-content 包裝 -->
+
   <div class="main-container" id="main-content">
     <header class="content-card">
       <h1>紅色宇宙論</h1>
@@ -53,9 +51,8 @@
     </div>
   </div>
 
-  <!-- 移除了整個自訂滾動條區塊 -->
 
-  <!-- ✅ 聊天模組 -->
+
   <div id="chat-toggle" class="chat-toggle-button" aria-label="開啟聊天室">
     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -75,11 +72,11 @@
       <div class="chat-content">
         <div class="chat-header">思想小助手</div>
 
-        <!-- ✅ 聊天訊息區 (已簡化) -->
+
         <div id="chat-scroll-root" class="chat-scroll-root" role="region" aria-label="聊天訊息滾動區">
-          <!-- 移除了 chat-scroll-content 包裝 -->
+
           <div id="chat-box" class="chat-box"></div>
-          <!-- 移除了 chat-scroll-root 內部的自訂滾動條 -->
+
         </div>
 
         <div class="chat-input-area">
@@ -92,7 +89,6 @@
 
   <!-- 移除了 lg-scrollbar.js -->
   <script src="static/js/SYSTEM_INSTRUCTION.js"></script>
-  <!-- <script src="static/js/marked.min.js"></script> -->
   <script src="static/js/chat.js"></script>
   <script src="static/js/theory.js"></script>
 </body>
