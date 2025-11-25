@@ -2243,7 +2243,7 @@
 );
 
 // main
-async function loadMarkdown(path, containerId) {
+async function loadMarkdownContent(path, containerId) {
     try {
 
         const res = await fetch(path);
@@ -2267,5 +2267,5 @@ async function loadMarkdown(path, containerId) {
 
 
 window.addEventListener("DOMContentLoaded", () => {
-    loadMarkdown("/assets/紅色宇宙論.md", "theory-text-container");
+    loadMarkdownContent("/assets/紅色宇宙論.md", "theory-text-container");
 });
