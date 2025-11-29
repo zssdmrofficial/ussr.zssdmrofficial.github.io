@@ -1,23 +1,17 @@
 :root {
-    /* === 粉紅主題色票（統一色系） === */
     --accent-color: #ff8888;
-    /* 主粉紅：鮮明 */
     --accent-strong: color-mix(in srgb, var(--accent-color) 85%, white 15%);
     --accent-soft: color-mix(in srgb, var(--accent-color) 40%, white 10%);
     --accent-glow: color-mix(in srgb, var(--accent-color) 35%, transparent);
     --accent-shadow: color-mix(in srgb, var(--accent-color) 25%, black 45%);
 
-    /* === 文字與背景 === */
     --text-primary: #ffffff;
     --text-secondary: rgba(255, 255, 255, 0.78);
     --bg-dark-overlay: rgba(0, 0, 0, 0.55);
-    /* 微粉的卡片霧面底，保持可讀性 */
     --content-bg: rgba(255, 255, 255, 0.06);
 
-    /* === 圓角與版心 === */
     --radius-ui: 24px;
     --border-radius: var(--radius-ui);
-    /* 修正原本樣式中使用 var(--border-radius) 的地方 */
     --maxw-content: 700px;
 }
 
@@ -65,7 +59,6 @@ body {
     font-family: "Noto Sans TC", "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     background-color: #000;
     animation: fadeIn 1s ease-out;
-    /* 移除了 scrollbar-width: none; */
 }
 
 p {
@@ -84,7 +77,6 @@ p {
     border: 0 !important;
 }
 
-/* ===== 背景（加入統一粉紅氛圍） ===== */
 .full-bg {
     position: fixed;
     top: 0;
@@ -113,7 +105,6 @@ p {
     z-index: -1;
 }
 
-/* ===== 液態玻璃：統一粉紅調光澤 ===== */
 .liquid_glass-wrapper {
     position: relative;
     display: flex;
@@ -175,13 +166,10 @@ p {
     justify-content: center;
 }
 
-/* ===== 版心與卡片 ===== */
 .main-container {
     width: 100%;
-    /* max-width: var(--maxw-content); <-- 關鍵：移除這行 */
     margin: 40px auto 120px;
     padding: 0 20px;
-    /* 保留這行，讓內容不會貼齊螢幕邊緣 */
 }
 
 .content-card {
@@ -220,7 +208,6 @@ section:nth-child(4) {
     box-shadow: 0 8px 26px color-mix(in srgb, var(--accent-color) 35%, transparent);
 }
 
-/* ===== 標題與段落（統一粉紅主色） ===== */
 header h1 {
     font-size: clamp(32px, 4vw, 48px);
     font-weight: 800;
@@ -248,13 +235,11 @@ section p {
     color: var(--text-secondary);
 }
 
-/* ===== Chat 元件滾動限制 ===== */
 #chat-widget,
 #chat-widget * {
     overscroll-behavior: contain;
 }
 
-/* ===== Markdown 內容樣式 ===== */
 .liquid-glass-md {
     padding: 20px;
     border-radius: 16px;
@@ -282,24 +267,16 @@ section p {
     text-decoration: underline;
 }
 
-/*
- * =========================================
- * == ✅ 新增：原生捲動軸美化方案 ==
- * =========================================
-*/
 html,
 body {
-    /* 讓滾動軸浮在內容上方 */
     overflow-y: overlay;
     background-color: transparent;
 }
 
-/* WebKit／Blink 瀏覽器（Chrome／Edge／Safari） */
 ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
     background: transparent;
-    /* 嘗試覆蓋基底 */
 }
 
 ::-webkit-scrollbar-track {
@@ -324,7 +301,6 @@ body {
     transform: scaleX(1.15);
 }
 
-/* Firefox */
 html {
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.2) transparent;

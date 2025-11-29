@@ -35,7 +35,6 @@ if (!__restored) {
 }
 let history = window.__CHAT_HISTORY__;
 
-
 const chatToggleEl = document.getElementById("chat-toggle");
 const chatWidgetEl = document.getElementById("chat-widget");
 const inputEl = document.getElementById("user-input");
@@ -53,8 +52,6 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// ====== 請用這個新版本，取代您 chat.js 中舊的 markdownToHtml 函數 ======
-
 function escapeHtml(text) {
     if (typeof text !== "string") return "";
     const div = document.createElement("div");
@@ -62,30 +59,17 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-/**
- * 將 Markdown 文字轉換為 HTML。
- * 這個版本只使用 marked.js 進行解析，沒有進行安全過濾。
- * @param {string} mdText - 包含 Markdown 格式的原始文字。
- * @returns {string} - 轉換後的 HTML 字串。
- */
 function markdownToHtml(mdText) {
     if (typeof mdText !== "string") return "";
 
-    // 1. 使用 Marked.js 將 Markdown 轉換為 HTML
-    //    - gfm: true 啟用 GitHub 風格的 Markdown (如表格、刪除線)
-    //    - breaks: true 讓單純的換行也變成 <br> 標籤，這在聊天室中更自然
     const rawHtml = marked.parse(mdText, {
         gfm: true,
         breaks: true,
     });
 
-    // 2. (可選但建議) 為了兼容您原有的複製按鈕功能，
-    //    我們將 Marked.js 生成的標準 <pre><code> 結構，
-    //    替換為您自定義的 <div class="code-container"> 結構。
     const finalHtml = rawHtml.replace(
         /<pre><code(?:\s+class="language-([^"]*)")?>((?:.|\n|\r)*?)<\/code><\/pre>/gi,
         (match, lang, code) => {
-            // Marked.js 已經對 code 內容進行了 HTML 轉義，所以這裡的內容是安全的
             const language = lang ? escapeHtml(lang) : "";
             return (
                 `<div class="code-container">` +
@@ -99,12 +83,10 @@ function markdownToHtml(mdText) {
     return finalHtml;
 }
 
-// ======= 兼容性備用複製函式（同步、回傳 boolean） =======
 function fallbackCopyTextToClipboard(text) {
     try {
         const textArea = document.createElement("textarea");
         textArea.value = text;
-        // 防止滾動到頁面底部或被看到
         textArea.style.position = "fixed";
         textArea.style.left = "-9999px";
         textArea.style.top = "0";
@@ -113,13 +95,11 @@ function fallbackCopyTextToClipboard(text) {
         textArea.focus();
         textArea.select();
 
-        // 嘗試 execCommand('copy')
         const successful = document.execCommand('copy');
         document.body.removeChild(textArea);
         return !!successful;
     } catch (err) {
         try {
-            // 嘗試另一種方法（某些瀏覽器可能需要）
             const textArea2 = document.createElement("textarea");
             textArea2.value = text;
             textArea2.style.position = "fixed";
@@ -137,24 +117,19 @@ function fallbackCopyTextToClipboard(text) {
     }
 }
 
-// ======= 事件代理版複製按鈕處理器（更強健） =======
-// 只呼叫一次： initCopyHandler(chatBoxEl)
 function initCopyHandler(chatBoxEl) {
     if (!chatBoxEl) {
         console.warn('[initCopyHandler] chatBoxEl 為空，請傳入 chatBoxEl DOM 節點');
         return;
     }
 
-    // 若已綁定過就不用重綁
     if (chatBoxEl.__copyHandlerBound__) return;
     chatBoxEl.__copyHandlerBound__ = true;
 
-    // 代理 click 事件到 .copy-button，能處理動態產生的按鈕
     chatBoxEl.addEventListener('click', async (ev) => {
         const btn = ev.target.closest ? ev.target.closest('.copy-button') : null;
         if (!btn) return;
 
-        // 找到 code-container 與 code-content
         const container = btn.closest('.code-container');
         if (!container) {
             console.warn('[copyHandler] 找不到 .code-container');
@@ -163,15 +138,12 @@ function initCopyHandler(chatBoxEl) {
         const codeEl = container.querySelector('.code-content');
         const textToCopy = (codeEl && codeEl.textContent) ? codeEl.textContent : '';
 
-        // UI：禁用按鈕避免多次點擊
         const origText = btn.textContent;
         btn.disabled = true;
 
-        // 嘗試現代 Clipboard API（只在 secure context / HTTPS 或 localhost 可用）
         let done = false;
         try {
             if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
-                // 有些瀏覽器需 secure context 才成功；若失敗會拋錯，落入 catch
                 await navigator.clipboard.writeText(textToCopy);
                 btn.textContent = '已複製!';
                 done = true;
@@ -181,7 +153,6 @@ function initCopyHandler(chatBoxEl) {
             done = false;
         }
 
-        // 若尚未成功，使用 fallback（同步）
         if (!done) {
             try {
                 const ok = fallbackCopyTextToClipboard(textToCopy);
@@ -197,21 +168,16 @@ function initCopyHandler(chatBoxEl) {
             }
         }
 
-        // 若仍失敗，友善提示使用者手動選取
         if (!done) {
-            // 也可以顯示更明確的 UI（alert 或小提示）
-            // alert('您的瀏覽器限制複製功能，請手動選取並複製。');
             console.log('[copyHandler] 最後降級處理，請手動複製');
         }
 
-        // 恢復按鈕文字與狀態
         setTimeout(() => {
             btn.textContent = origText || '複製';
             btn.disabled = false;
         }, 1800);
     });
 
-    // 補上：若頁面已有 .code-container 但沒有 copy-button（或某些舊流程沒加按鈕），我們補上按鈕
     const existingContainers = chatBoxEl.querySelectorAll('.code-container');
     existingContainers.forEach((c) => {
         if (!c.querySelector('.copy-button')) {
@@ -219,13 +185,10 @@ function initCopyHandler(chatBoxEl) {
             b.type = 'button';
             b.className = 'copy-button';
             b.textContent = '複製';
-            // 放到 container 最前面（或你希望的位置）
             c.insertBefore(b, c.firstChild);
         }
     });
-
 }
-
 
 function displayInitialMessage() {
     if (chatBoxEl.children.length > 0) return;
@@ -235,16 +198,13 @@ function displayInitialMessage() {
     chatBoxEl.innerHTML += `<p><b>小助手:</b> ${html}</p>`;
     chatBoxEl.scrollTo({ top: chatBoxEl.scrollHeight, behavior: 'smooth' });
 }
-// ====== 請用這個新版本，取代您 chat.js 中舊的 renderMessage 函數 ======
 
 function renderMessage(role, content, isError = false) {
     const who = role === "user" ? "你" : "小助手";
     let html;
 
-    // ★ 核心修改：將 p 改為 div ★
-    // div 是一個容器，可以合法地包含由 Marked.js 產生的 p, ul, pre 等標籤。
     const messageEl = document.createElement('div');
-    messageEl.className = 'message-wrapper'; // 給它一個 class，方便 CSS 定位
+    messageEl.className = 'message-wrapper';
 
     if (isError) {
         html = escapeHtml(content);
@@ -254,15 +214,14 @@ function renderMessage(role, content, isError = false) {
         html = escapeHtml(content);
         messageEl.innerHTML = `<b>${who}:</b> ${html}`;
     } else {
-        html = markdownToHtml(content); // markdownToHtml 函數保持不變
-        // 這裡的注入格式和您原來完全一樣，只是容器變了
+        html = markdownToHtml(content);
         messageEl.innerHTML = `<b>${who}:</b> ${html}`;
     }
 
     chatBoxEl.appendChild(messageEl);
-
     chatBoxEl.scrollTo({ top: chatBoxEl.scrollHeight, behavior: 'smooth' });
 }
+
 async function callApiWithRetry(body, maxRetries = Infinity) {
     let attempt = 0;
     while (attempt < maxRetries) {
@@ -342,7 +301,6 @@ async function showCooldownCountdown(seconds) {
     });
 }
 
-
 async function sendMessage() {
     const text = inputEl.value.trim();
     if (!text) {
@@ -355,14 +313,13 @@ async function sendMessage() {
     history.push({ role: "user", parts: [{ text }] });
     persistChatState();
 
-
     inputEl.value = "";
     inputEl.disabled = true;
     sendButtonEl.disabled = true;
 
-    const loadingEl = document.createElement("div");       // 1. 將 p 改為 div
-    loadingEl.className = 'message-wrapper';               // 2. 加上 message-wrapper class
-    loadingEl.id = "loading-message";                      //    (id 必須保留，這樣才能在之後移除它)
+    const loadingEl = document.createElement("div");
+    loadingEl.className = 'message-wrapper';
+    loadingEl.id = "loading-message";
     loadingEl.innerHTML = `<b>小助手:</b> <i>思想小助手回應中...</i>`;
     chatBoxEl.appendChild(loadingEl);
     chatBoxEl.scrollTo({ top: chatBoxEl.scrollHeight, behavior: 'smooth' });
@@ -401,7 +358,6 @@ async function sendMessage() {
     }
 }
 
-
 chatToggleEl?.addEventListener("click", () => {
     const isHidden = chatWidgetEl.style.display === "none" || chatWidgetEl.style.display === "";
 
@@ -434,7 +390,6 @@ chatToggleEl?.addEventListener("click", () => {
     }
 });
 
-
 sendButtonEl?.addEventListener("click", sendMessage);
 
 inputEl?.addEventListener("keydown", (e) => {
@@ -454,7 +409,6 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => hint.classList.remove('show'), 4500);
 });
 
-
 function persistChatState() {
     try {
         const payload = {
@@ -466,7 +420,6 @@ function persistChatState() {
         console.warn('儲存聊天狀態失敗：', e);
     }
 }
-
 
 window.addEventListener('pagehide', persistChatState);
 window.addEventListener('beforeunload', persistChatState);
@@ -495,6 +448,7 @@ document.addEventListener('DOMContentLoaded', () => {
         inputEl?.focus?.();
     }
 });
+
 document.addEventListener('DOMContentLoaded', () => {
     initCopyHandler(document.getElementById('chat-box'));
 });
