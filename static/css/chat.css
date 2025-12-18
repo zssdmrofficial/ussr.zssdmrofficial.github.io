@@ -386,17 +386,6 @@ html.lg-dragging * {
     pointer-events: none;
 }
 
-.chat-hint::after {
-    content: "";
-    position: absolute;
-    bottom: -8px;
-    right: 24px;
-    border-width: 8px 8px 0 8px;
-    border-style: solid;
-    border-color: var(--chat-glass-bg-strong) transparent transparent transparent;
-    filter: drop-shadow(0 -1px 1px rgba(0, 0, 0, 0.2));
-}
-
 .chat-hint.show {
     opacity: 1;
     transform: translateY(0);
