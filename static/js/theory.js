@@ -22,5 +22,5 @@ async function loadMarkdownContent(path, containerId) {
 
 
 window.addEventListener("DOMContentLoaded", () => {
-    loadMarkdownContent("/assets/紅色宇宙論.md", "theory-text-container");
+    loadMarkdownContent("/static/md/紅色宇宙論.md", "theory-text-container");
 });
