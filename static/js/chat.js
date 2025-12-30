@@ -1,6 +1,4 @@
-const API_KEY = "AIzaSyDo6isc-iR_Sv0XIznh4Tx7b8sn9pfKa6I";
-const MODEL = "gemma-3-27b-it";
-const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${API_KEY}`;
+const API_URL = "https://geminiapi.zssdmrofficial.workers.dev/"; 
 const CHAT_STATE_KEY = 'chat_state_v1';
 
 function isHardReload() {
