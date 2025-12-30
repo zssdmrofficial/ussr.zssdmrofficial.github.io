@@ -1,4 +1,4 @@
-const API_URL = "https://geminiapi.zssdmrofficial.workers.dev/"; 
+const API_URL = "https://gemini-api.zssdmrofficial.workers.dev/"; 
 const CHAT_STATE_KEY = 'chat_state_v1';
 
 function isHardReload() {
